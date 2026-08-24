@@ -33,7 +33,7 @@ class DropZone(QFrame):
         layout.addWidget(self.icon_label)
 
         # Title / prompt
-        self.title_label = QLabel("Drag & Drop a Folder Here")
+        self.title_label = QLabel("Drag and Drop a Folder Here")
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.title_label.setStyleSheet("font-size: 15px; font-weight: 600; color: #f3f4f6; background: transparent;")
         layout.addWidget(self.title_label)
@@ -48,8 +48,10 @@ class DropZone(QFrame):
         btn_layout = QHBoxLayout()
         btn_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        self.browse_btn = QPushButton("Browse Directory")
+        self.browse_btn = QPushButton("📁 Browse Folder")
         self.browse_btn.setObjectName("primaryBtn")
+        self.browse_btn.setMinimumHeight(38)
+        self.browse_btn.setMinimumWidth(160)
         self.browse_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.browse_btn.clicked.connect(self._open_file_dialog)
         btn_layout.addWidget(self.browse_btn)
