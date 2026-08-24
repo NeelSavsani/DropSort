@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
+    QLineEdit,
     QListWidget,
     QListWidgetItem,
     QPushButton,
@@ -105,6 +106,52 @@ class DashboardView(QWidget):
 
         main_layout.addLayout(kpi_layout)
 
+        # Step 1 & 2 Workflow Banner / Path Selector
+        workflow_card = QFrame()
+        workflow_card.setObjectName("workflowCard")
+        workflow_card.setStyleSheet("""
+            QFrame#workflowCard {
+                background-color: #18202c;
+                border: 1px solid #283548;
+                border-radius: 12px;
+                padding: 14px 18px;
+            }
+        """)
+        wf_layout = QVBoxLayout(workflow_card)
+        wf_layout.setContentsMargins(12, 12, 12, 12)
+        wf_layout.setSpacing(10)
+
+        wf_title_row = QHBoxLayout()
+        wf_step_lbl = QLabel("Step 1: Select a Target Directory   ➔   Step 2: Click 'Search' for Dry Run")
+        wf_step_lbl.setStyleSheet("font-size: 13px; font-weight: 600; color: #6366f1; background: transparent;")
+        wf_title_row.addWidget(wf_step_lbl)
+        wf_title_row.addStretch()
+        wf_layout.addLayout(wf_title_row)
+
+        path_selector_row = QHBoxLayout()
+        path_selector_row.setSpacing(10)
+
+        self.path_input = QLineEdit()
+        self.path_input.setPlaceholderText("Select or enter directory path to organize...")
+        self.path_input.textChanged.connect(self._on_path_input_changed)
+        path_selector_row.addWidget(self.path_input, stretch=4)
+
+        self.browse_btn = QPushButton("📁 Browse Directory...")
+        self.browse_btn.setObjectName("subtleBtn")
+        self.browse_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.browse_btn.clicked.connect(self._open_browse_dialog)
+        path_selector_row.addWidget(self.browse_btn)
+
+        self.search_btn = QPushButton("🔍 Search (Dry Run)")
+        self.search_btn.setObjectName("primaryBtn")
+        self.search_btn.setFixedHeight(36)
+        self.search_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.search_btn.clicked.connect(self._on_preview_clicked)
+        path_selector_row.addWidget(self.search_btn)
+
+        wf_layout.addLayout(path_selector_row)
+        main_layout.addWidget(workflow_card)
+
         # Middle Row: DropZone and Quick Action Panel
         middle_layout = QHBoxLayout()
         middle_layout.setSpacing(16)
@@ -133,13 +180,13 @@ class DashboardView(QWidget):
         act_title.setStyleSheet("font-size: 14px; font-weight: 600; color: #f3f4f6; background: transparent;")
         act_layout.addWidget(act_title)
 
-        self.preview_btn = QPushButton("🔍 Scan & Live Preview")
+        self.preview_btn = QPushButton("🔍 Search & Dry Run")
         self.preview_btn.setObjectName("primaryBtn")
         self.preview_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.preview_btn.clicked.connect(self._on_preview_clicked)
         act_layout.addWidget(self.preview_btn)
 
-        self.organize_btn = QPushButton("⚡ Organize Immediately")
+        self.organize_btn = QPushButton("⚡ Organize Now")
         self.organize_btn.setObjectName("successBtn")
         self.organize_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.organize_btn.clicked.connect(self._on_organize_clicked)
@@ -210,8 +257,21 @@ class DashboardView(QWidget):
         # Initial message
         self.log_activity("DropSort initialized. Select a folder to begin organizing.", "info")
 
+    def _open_browse_dialog(self) -> None:
+        folder = QFileDialog.getExistingDirectory(self, "Select Target Folder to Organize")
+        if folder:
+            self.set_folder(folder)
+
+    def _on_path_input_changed(self, text: str) -> None:
+        p = Path(text.strip())
+        if p.exists() and p.is_dir():
+            self.current_folder = str(p.resolve())
+            self.drop_zone.set_folder(self.current_folder)
+
     def set_folder(self, folder: str) -> None:
         self.current_folder = folder
+        if self.path_input.text() != folder:
+            self.path_input.setText(folder)
         self.drop_zone.set_folder(folder)
         self.log_activity(f"Selected target folder: {folder}", "info")
 

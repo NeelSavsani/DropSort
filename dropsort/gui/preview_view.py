@@ -48,9 +48,9 @@ class PreviewView(QWidget):
         title_box = QVBoxLayout()
         title_box.setSpacing(2)
 
-        main_title = QLabel("Live Preview & Staging")
+        main_title = QLabel("🔍 Dry Run Preview")
         main_title.setStyleSheet("font-size: 22px; font-weight: 700; color: #f3f4f6;")
-        sub_title = QLabel("Review exactly where each file will be moved before any disk changes occur")
+        sub_title = QLabel("Review exactly how files will be organized before applying changes. No files have been moved yet.")
         sub_title.setStyleSheet("font-size: 13px; color: #9ca3af;")
 
         title_box.addWidget(main_title)
@@ -153,7 +153,7 @@ class PreviewView(QWidget):
 
         action_layout.addLayout(stat_box, stretch=1)
 
-        self.apply_btn = QPushButton("🚀 Apply Selected Changes")
+        self.apply_btn = QPushButton("✅ Confirm Change")
         self.apply_btn.setObjectName("successBtn")
         self.apply_btn.setFixedHeight(40)
         self.apply_btn.setCursor(Qt.CursorShape.PointingHandCursor)

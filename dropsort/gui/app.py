@@ -309,11 +309,26 @@ class MainWindow(QMainWindow):
         self.preview_view.hide_progress()
 
         if res["executed"] > 0:
-            self.show_toast(f"Successfully organized {res['executed']} files!", "success")
+            msg = f"Successfully organized {res['executed']} files!"
+            self.show_toast(msg, "success")
             self.dashboard_view.log_activity(f"Organized batch {res['batch_id'][:8]}: {res['executed']} files moved.", "success")
             self.dashboard_view.refresh_stats()
             self.history_view.load_history()
-            self._on_preview_rescan()
+
+            # Show completed modal with quick undo option
+            reply = QMessageBox.information(
+                self,
+                "Changes Applied Successfully",
+                f"✅ Organization Complete!\n\n"
+                f"• Files Organized: {res['executed']}\n"
+                f"• Batch ID: {res['batch_id']}\n\n"
+                f"Would you like to keep these changes, or undo immediately?",
+                QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Reset,
+            )
+            if reply == QMessageBox.StandardButton.Reset:
+                self._on_dashboard_undo_last()
+            else:
+                self._on_preview_rescan()
         else:
             self.show_toast("Failed to move selected files.", "error")
 
