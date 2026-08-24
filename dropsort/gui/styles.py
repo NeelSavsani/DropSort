@@ -101,16 +101,17 @@ QPushButton {
     border-radius: 8px;
     padding: 8px 16px;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
+    min-height: 28px;
 }
 
 QPushButton:hover {
     background-color: #2b394f;
-    border-color: #3b4d66;
+    border-color: #4f607d;
 }
 
 QPushButton:pressed {
-    background-color: #1c2534;
+    background-color: #1a2332;
 }
 
 QPushButton:disabled {
@@ -123,63 +124,78 @@ QPushButton:disabled {
 QPushButton#primaryBtn {
     background-color: #6366f1;
     color: #ffffff;
-    border: none;
-    font-weight: 600;
+    border: 1px solid #4f46e5;
+    font-weight: 700;
+    padding: 8px 18px;
 }
 
 QPushButton#primaryBtn:hover {
     background-color: #4f46e5;
+    border-color: #4338ca;
 }
 
 QPushButton#primaryBtn:pressed {
-    background-color: #4338ca;
+    background-color: #3730a3;
 }
 
 /* Success Buttons */
 QPushButton#successBtn {
     background-color: #10b981;
     color: #ffffff;
-    border: none;
-    font-weight: 600;
+    border: 1px solid #059669;
+    font-weight: 700;
+    padding: 8px 18px;
 }
 
 QPushButton#successBtn:hover {
     background-color: #059669;
+    border-color: #047857;
+}
+
+QPushButton#successBtn:pressed {
+    background-color: #065f46;
 }
 
 /* Danger Buttons */
 QPushButton#dangerBtn {
     background-color: #ef4444;
     color: #ffffff;
-    border: none;
+    border: 1px solid #dc2626;
     font-weight: 600;
+    padding: 6px 14px;
 }
 
 QPushButton#dangerBtn:hover {
     background-color: #dc2626;
 }
 
+QPushButton#dangerBtn:pressed {
+    background-color: #b91c1c;
+}
+
 /* Subtle Secondary Buttons */
 QPushButton#subtleBtn {
-    background-color: transparent;
-    color: #9ca3af;
-    border: 1px solid #283548;
+    background-color: #161f2c;
+    color: #cbd5e1;
+    border: 1px solid #2e3d52;
+    padding: 6px 14px;
 }
 
 QPushButton#subtleBtn:hover {
-    background-color: #18202c;
+    background-color: #212d3e;
     color: #ffffff;
-    border-color: #4b5563;
+    border-color: #4f607d;
 }
 
 /* Line Edits & Inputs */
-QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QComboBox {
+QLineEdit, QTextEdit, QPlainTextEdit, QSpinBox, QDoubleSpinBox, QComboBox {
     background-color: #131b26;
     color: #f3f4f6;
     border: 1px solid #283548;
     border-radius: 8px;
     padding: 8px 12px;
     font-size: 13px;
+    min-height: 22px;
 }
 
 QLineEdit:focus, QTextEdit:focus, QPlainTextEdit:focus, QSpinBox:focus, QComboBox:focus {

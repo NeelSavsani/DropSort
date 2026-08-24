@@ -135,13 +135,13 @@ class MainWindow(QMainWindow):
         # Nav Buttons Group
         self.nav_group = QButtonGroup(self)
         self.nav_group.setExclusive(True)
-
         self.nav_btns: List[QPushButton] = []
+
         nav_items = [
             ("🏠  Dashboard", 0),
-            ("👀  Live Preview", 1),
-            ("⚙️  Rules & Logic", 2),
-            ("↩️  History & Undo", 3),
+            ("👀  Preview Changes", 1),
+            ("⚙️  Sorting Rules", 2),
+            ("↩️  Undo History", 3),
             ("🔧  Settings", 4),
         ]
 
@@ -149,6 +149,7 @@ class MainWindow(QMainWindow):
             btn = QPushButton(text)
             btn.setObjectName("navBtn")
             btn.setCheckable(True)
+            btn.setMinimumHeight(38)
             btn.setCursor(Qt.CursorShape.PointingHandCursor)
             if index == 0:
                 btn.setChecked(True)

@@ -49,11 +49,11 @@ class HistoryView(QWidget):
         # Header
         header_layout = QHBoxLayout()
         title_box = QVBoxLayout()
-        title_box.setSpacing(2)
+        title_box.setSpacing(3)
 
-        main_title = QLabel("History & Undo Center")
+        main_title = QLabel("History & Undo")
         main_title.setStyleSheet("font-size: 22px; font-weight: 700; color: #f3f4f6;")
-        sub_title = QLabel("Every move is tracked in SQLite. Reverse any single file move or entire batch with one click.")
+        sub_title = QLabel("See all past file moves and restore any files back to their original places with 1 click.")
         sub_title.setStyleSheet("font-size: 13px; color: #9ca3af;")
 
         title_box.addWidget(main_title)
@@ -61,8 +61,9 @@ class HistoryView(QWidget):
         header_layout.addLayout(title_box)
         header_layout.addStretch()
 
-        refresh_btn = QPushButton("🔄 Refresh")
+        refresh_btn = QPushButton("🔄 Refresh List")
         refresh_btn.setObjectName("subtleBtn")
+        refresh_btn.setMinimumHeight(32)
         refresh_btn.clicked.connect(self.load_history)
         header_layout.addWidget(refresh_btn)
 
@@ -75,7 +76,7 @@ class HistoryView(QWidget):
                 background-color: #18202c;
                 border: 1px solid #283548;
                 border-radius: 10px;
-                padding: 6px 12px;
+                padding: 8px 12px;
             }
         """)
         filter_layout = QHBoxLayout(filter_card)
@@ -83,12 +84,14 @@ class HistoryView(QWidget):
         filter_layout.setSpacing(12)
 
         self.search_input = QLineEdit()
-        self.search_input.setPlaceholderText("🔍 Search history by filename, rule, or batch ID...")
+        self.search_input.setPlaceholderText("🔍 Filter history by file name...")
+        self.search_input.setMinimumHeight(32)
         self.search_input.textChanged.connect(self._apply_filter)
         filter_layout.addWidget(self.search_input, stretch=3)
 
         self.status_filter = QComboBox()
         self.status_filter.addItems(["All Moves", "Completed", "Undone", "Failed"])
+        self.status_filter.setMinimumHeight(32)
         self.status_filter.currentIndexChanged.connect(self._apply_filter)
         filter_layout.addWidget(self.status_filter, stretch=1)
 
@@ -105,12 +108,12 @@ class HistoryView(QWidget):
         self.batches_table = QTableWidget()
         self.batches_table.setColumnCount(6)
         self.batches_table.setHorizontalHeaderLabels([
-            "Timestamp",
+            "Time",
             "Batch ID",
-            "Target Folder",
+            "Folder",
             "Files Moved",
             "Status",
-            "Actions",
+            "Action",
         ])
         self.batches_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         self.batches_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
@@ -118,6 +121,7 @@ class HistoryView(QWidget):
         self.batches_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.ResizeToContents)
         self.batches_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)
         self.batches_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents)
+        self.batches_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.batches_table.setAlternatingRowColors(True)
         b_layout.addWidget(self.batches_table)
         self.tabs.addTab(batch_tab, "📦 Organization Batches")
@@ -130,12 +134,12 @@ class HistoryView(QWidget):
         self.moves_table = QTableWidget()
         self.moves_table.setColumnCount(6)
         self.moves_table.setHorizontalHeaderLabels([
-            "Timestamp",
-            "Original Source",
-            "Current Destination",
+            "Time",
+            "Original File Name",
+            "Moved To",
             "Rule Matched",
             "Status",
-            "Actions",
+            "Action",
         ])
         self.moves_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         self.moves_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
@@ -143,9 +147,10 @@ class HistoryView(QWidget):
         self.moves_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Interactive)
         self.moves_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeMode.ResizeToContents)
         self.moves_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents)
+        self.moves_table.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
         self.moves_table.setAlternatingRowColors(True)
         m_layout.addWidget(self.moves_table)
-        self.tabs.addTab(moves_tab, "📄 All Individual Moves")
+        self.tabs.addTab(moves_tab, "📄 Individual File Moves")
 
         main_layout.addWidget(self.tabs, stretch=1)
 
@@ -189,10 +194,11 @@ class HistoryView(QWidget):
             self.batches_table.setCellWidget(row, 4, s_widget)
 
             # Undo Batch Action Button
-            undo_btn = QPushButton("↩️ Undo Batch")
+            undo_btn = QPushButton("↩️ Undo All")
             undo_btn.setObjectName("dangerBtn" if b.status == "completed" else "subtleBtn")
             undo_btn.setEnabled(b.status == "completed")
-            undo_btn.setFixedHeight(26)
+            undo_btn.setMinimumHeight(28)
+            undo_btn.setMinimumWidth(100)
             undo_btn.clicked.connect(lambda _, bid=b.id: self._undo_batch_clicked(bid))
 
             a_widget = QWidget()
@@ -241,7 +247,8 @@ class HistoryView(QWidget):
             undo_btn = QPushButton("↩️ Undo")
             undo_btn.setObjectName("dangerBtn" if stat_str == "completed" else "subtleBtn")
             undo_btn.setEnabled(stat_str == "completed")
-            undo_btn.setFixedHeight(26)
+            undo_btn.setMinimumHeight(28)
+            undo_btn.setMinimumWidth(80)
             undo_btn.clicked.connect(lambda _, mid=m.id: self._undo_single_move(mid))
 
             a_widget = QWidget()

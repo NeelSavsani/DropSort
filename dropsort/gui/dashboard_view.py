@@ -52,11 +52,11 @@ class DashboardView(QWidget):
         # Header Section
         header_layout = QHBoxLayout()
         title_box = QVBoxLayout()
-        title_box.setSpacing(2)
+        title_box.setSpacing(3)
 
         main_title = QLabel("Dashboard")
         main_title.setStyleSheet("font-size: 22px; font-weight: 700; color: #f3f4f6;")
-        sub_title = QLabel("Real-time folder monitoring, automated organization, and quick actions")
+        sub_title = QLabel("Organize your files cleanly into folders in 3 easy steps.")
         sub_title.setStyleSheet("font-size: 13px; color: #9ca3af;")
 
         title_box.addWidget(main_title)
@@ -78,11 +78,12 @@ class DashboardView(QWidget):
         watcher_layout.setContentsMargins(10, 6, 10, 6)
         watcher_layout.setSpacing(12)
 
-        self.watch_status_badge = Badge("IDLE", "muted")
+        self.watch_status_badge = Badge("AUTO-WATCH OFF", "muted")
         watcher_layout.addWidget(self.watch_status_badge)
 
-        self.toggle_watch_btn = QPushButton("Start Live Watch")
+        self.toggle_watch_btn = QPushButton("Turn On Auto-Watch")
         self.toggle_watch_btn.setObjectName("primaryBtn")
+        self.toggle_watch_btn.setMinimumHeight(32)
         self.toggle_watch_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.toggle_watch_btn.clicked.connect(self._toggle_watcher)
         watcher_layout.addWidget(self.toggle_watch_btn)
@@ -94,10 +95,10 @@ class DashboardView(QWidget):
         kpi_layout = QHBoxLayout()
         kpi_layout.setSpacing(14)
 
-        self.card_scanned = StatCard("Files Detected", "0", "In target folder", icon="📁", accent_color="#6366f1")
-        self.card_organized = StatCard("Organized Today", "0", "Processed files", icon="✨", accent_color="#10b981")
-        self.card_rules = StatCard("Active Rules", "9", "Multi-condition filters", icon="⚙️", accent_color="#38bdf8")
-        self.card_undone = StatCard("Batches Logged", "0", "1-click undo ready", icon="↩️", accent_color="#f59e0b")
+        self.card_scanned = StatCard("Files Found", "0", "In selected folder", icon="📁", accent_color="#6366f1")
+        self.card_organized = StatCard("Files Moved Today", "0", "Organized cleanly", icon="✨", accent_color="#10b981")
+        self.card_rules = StatCard("Sorting Rules", "9", "Active filters", icon="⚙️", accent_color="#38bdf8")
+        self.card_undone = StatCard("Undo Sessions", "0", "1-click undo ready", icon="↩️", accent_color="#f59e0b")
 
         kpi_layout.addWidget(self.card_scanned)
         kpi_layout.addWidget(self.card_organized)
@@ -122,8 +123,8 @@ class DashboardView(QWidget):
         wf_layout.setSpacing(10)
 
         wf_title_row = QHBoxLayout()
-        wf_step_lbl = QLabel("Step 1: Select a Target Directory   ➔   Step 2: Click 'Search' for Dry Run")
-        wf_step_lbl.setStyleSheet("font-size: 13px; font-weight: 600; color: #6366f1; background: transparent;")
+        wf_step_lbl = QLabel("1️⃣ Step 1: Choose a Folder    ➔    2️⃣ Step 2: Click 'Search' to Test Safely")
+        wf_step_lbl.setStyleSheet("font-size: 13px; font-weight: 700; color: #818cf8; background: transparent;")
         wf_title_row.addWidget(wf_step_lbl)
         wf_title_row.addStretch()
         wf_layout.addLayout(wf_title_row)
@@ -132,19 +133,21 @@ class DashboardView(QWidget):
         path_selector_row.setSpacing(10)
 
         self.path_input = QLineEdit()
-        self.path_input.setPlaceholderText("Select or enter directory path to organize...")
+        self.path_input.setPlaceholderText("Choose a folder to organize (e.g., Downloads, Documents)...")
+        self.path_input.setMinimumHeight(34)
         self.path_input.textChanged.connect(self._on_path_input_changed)
         path_selector_row.addWidget(self.path_input, stretch=4)
 
-        self.browse_btn = QPushButton("📁 Browse Directory...")
+        self.browse_btn = QPushButton("📁 Choose Folder...")
         self.browse_btn.setObjectName("subtleBtn")
+        self.browse_btn.setMinimumHeight(34)
         self.browse_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.browse_btn.clicked.connect(self._open_browse_dialog)
         path_selector_row.addWidget(self.browse_btn)
 
-        self.search_btn = QPushButton("🔍 Search (Dry Run)")
+        self.search_btn = QPushButton("🔍 Search & Preview")
         self.search_btn.setObjectName("primaryBtn")
-        self.search_btn.setFixedHeight(36)
+        self.search_btn.setMinimumHeight(34)
         self.search_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.search_btn.clicked.connect(self._on_preview_clicked)
         path_selector_row.addWidget(self.search_btn)
@@ -177,26 +180,34 @@ class DashboardView(QWidget):
         act_layout.setSpacing(10)
 
         act_title = QLabel("Quick Actions")
-        act_title.setStyleSheet("font-size: 14px; font-weight: 600; color: #f3f4f6; background: transparent;")
+        act_title.setStyleSheet("font-size: 14px; font-weight: 700; color: #f3f4f6; background: transparent;")
         act_layout.addWidget(act_title)
 
-        self.preview_btn = QPushButton("🔍 Search & Dry Run")
+        self.preview_btn = QPushButton("🔍 Search & Preview")
         self.preview_btn.setObjectName("primaryBtn")
+        self.preview_btn.setMinimumHeight(34)
         self.preview_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.preview_btn.clicked.connect(self._on_preview_clicked)
         act_layout.addWidget(self.preview_btn)
 
-        self.organize_btn = QPushButton("⚡ Organize Now")
+        self.organize_btn = QPushButton("⚡ Move Files Now")
         self.organize_btn.setObjectName("successBtn")
+        self.organize_btn.setMinimumHeight(34)
         self.organize_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.organize_btn.clicked.connect(self._on_organize_clicked)
         act_layout.addWidget(self.organize_btn)
 
-        self.undo_btn = QPushButton("↩️ Undo Last Batch")
+        self.undo_btn = QPushButton("↩️ Put Files Back (Undo)")
         self.undo_btn.setObjectName("subtleBtn")
+        self.undo_btn.setMinimumHeight(34)
         self.undo_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.undo_btn.clicked.connect(self._on_undo_clicked)
         act_layout.addWidget(self.undo_btn)
+
+        act_layout.addStretch()
+        middle_layout.addWidget(actions_card, stretch=2)
+
+        main_layout.addLayout(middle_layout)
 
         act_layout.addStretch()
         middle_layout.addWidget(actions_card, stretch=2)

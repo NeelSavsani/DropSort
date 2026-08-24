@@ -46,11 +46,11 @@ class PreviewView(QWidget):
         # Header Title
         header_layout = QHBoxLayout()
         title_box = QVBoxLayout()
-        title_box.setSpacing(2)
+        title_box.setSpacing(3)
 
-        main_title = QLabel("🔍 Dry Run Preview")
+        main_title = QLabel("🔍 Preview: See Where Your Files Will Go")
         main_title.setStyleSheet("font-size: 22px; font-weight: 700; color: #f3f4f6;")
-        sub_title = QLabel("Review exactly how files will be organized before applying changes. No files have been moved yet.")
+        sub_title = QLabel("Review changes safely. No files have been moved yet. Click 'Confirm Change' when you are ready.")
         sub_title.setStyleSheet("font-size: 13px; color: #9ca3af;")
 
         title_box.addWidget(main_title)
@@ -58,8 +58,9 @@ class PreviewView(QWidget):
         header_layout.addLayout(title_box)
         header_layout.addStretch()
 
-        self.rescan_btn = QPushButton("🔄 Rescan Folder")
+        self.rescan_btn = QPushButton("🔄 Re-Scan Folder")
         self.rescan_btn.setObjectName("subtleBtn")
+        self.rescan_btn.setMinimumHeight(32)
         self.rescan_btn.clicked.connect(self.rescan_requested.emit)
         header_layout.addWidget(self.rescan_btn)
 
@@ -72,7 +73,7 @@ class PreviewView(QWidget):
                 background-color: #18202c;
                 border: 1px solid #283548;
                 border-radius: 10px;
-                padding: 6px 12px;
+                padding: 8px 12px;
             }
         """)
         filter_layout = QHBoxLayout(filter_card)
@@ -80,25 +81,27 @@ class PreviewView(QWidget):
         filter_layout.setSpacing(12)
 
         self.search_input = QLineEdit()
-        self.search_input.setPlaceholderText("🔍 Search by filename or path...")
+        self.search_input.setPlaceholderText("🔍 Filter files by name...")
+        self.search_input.setMinimumHeight(32)
         self.search_input.textChanged.connect(self._apply_filters)
         filter_layout.addWidget(self.search_input, stretch=3)
 
         self.status_filter = QComboBox()
-        self.status_filter.addItems(["All Statuses", "Ready to Move", "Duplicate / Replace", "Skipped"])
+        self.status_filter.addItems(["All Files", "Ready to Move", "Duplicate Name", "Skipped"])
+        self.status_filter.setMinimumHeight(32)
         self.status_filter.currentIndexChanged.connect(self._apply_filters)
         filter_layout.addWidget(self.status_filter, stretch=1)
 
         # Selection shortcuts
         self.select_all_btn = QPushButton("Select All")
         self.select_all_btn.setObjectName("subtleBtn")
-        self.select_all_btn.setFixedHeight(28)
+        self.select_all_btn.setMinimumHeight(32)
         self.select_all_btn.clicked.connect(lambda: self._set_all_selection(True))
         filter_layout.addWidget(self.select_all_btn)
 
-        self.deselect_all_btn = QPushButton("Deselect All")
+        self.deselect_all_btn = QPushButton("Unselect All")
         self.deselect_all_btn.setObjectName("subtleBtn")
-        self.deselect_all_btn.setFixedHeight(28)
+        self.deselect_all_btn.setMinimumHeight(32)
         self.deselect_all_btn.clicked.connect(lambda: self._set_all_selection(False))
         filter_layout.addWidget(self.deselect_all_btn)
 
@@ -110,10 +113,10 @@ class PreviewView(QWidget):
         self.table.setHorizontalHeaderLabels([
             "Select",
             "File Name",
-            "Target Destination",
-            "Matched Rule",
+            "New Location (Folder)",
+            "Rule Matched",
             "Size",
-            "Action / Status",
+            "Action",
         ])
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Interactive)
@@ -143,8 +146,8 @@ class PreviewView(QWidget):
         # Progress / Stats
         stat_box = QVBoxLayout()
         stat_box.setSpacing(4)
-        self.summary_label = QLabel("No folder scanned yet.")
-        self.summary_label.setStyleSheet("color: #9ca3af; font-size: 13px; background: transparent;")
+        self.summary_label = QLabel("No folder chosen yet.")
+        self.summary_label.setStyleSheet("color: #9ca3af; font-size: 13px; font-weight: 500; background: transparent;")
         stat_box.addWidget(self.summary_label)
 
         self.progress_bar = QProgressBar()
@@ -153,9 +156,10 @@ class PreviewView(QWidget):
 
         action_layout.addLayout(stat_box, stretch=1)
 
-        self.apply_btn = QPushButton("✅ Confirm Change")
+        self.apply_btn = QPushButton("✅ Confirm Change (Move Files)")
         self.apply_btn.setObjectName("successBtn")
-        self.apply_btn.setFixedHeight(40)
+        self.apply_btn.setMinimumHeight(38)
+        self.apply_btn.setMinimumWidth(200)
         self.apply_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.apply_btn.clicked.connect(self._on_apply_clicked)
         action_layout.addWidget(self.apply_btn)

@@ -47,11 +47,11 @@ class SettingsView(QWidget):
         # Header
         header_layout = QHBoxLayout()
         title_box = QVBoxLayout()
-        title_box.setSpacing(2)
+        title_box.setSpacing(3)
 
         main_title = QLabel("Settings & Preferences")
         main_title.setStyleSheet("font-size: 22px; font-weight: 700; color: #f3f4f6;")
-        sub_title = QLabel("Configure folder watching behavior, duplicate resolution, and ignore lists")
+        sub_title = QLabel("Customize how files are organized, what files to skip, and duplicate handling.")
         sub_title.setStyleSheet("font-size: 13px; color: #9ca3af;")
 
         title_box.addWidget(main_title)
@@ -59,9 +59,10 @@ class SettingsView(QWidget):
         header_layout.addLayout(title_box)
         header_layout.addStretch()
 
-        save_btn = QPushButton("💾 Save Preferences")
+        save_btn = QPushButton("💾 Save Settings")
         save_btn.setObjectName("primaryBtn")
-        save_btn.setFixedHeight(34)
+        save_btn.setMinimumHeight(34)
+        save_btn.setMinimumWidth(130)
         save_btn.clicked.connect(self._save_values)
         header_layout.addWidget(save_btn)
 
@@ -78,62 +79,66 @@ class SettingsView(QWidget):
         form_layout.setSpacing(16)
 
         # Group 1: General & Duplicate Behavior
-        general_group = QGroupBox("General Organization Behavior")
+        general_group = QGroupBox("General Organization")
         g_layout = QVBoxLayout(general_group)
         g_layout.setSpacing(10)
 
         dup_row = QHBoxLayout()
-        dup_lbl = QLabel("Default Duplicate Action:")
-        dup_lbl.setFixedWidth(200)
+        dup_lbl = QLabel("If a file already exists in destination:")
+        dup_lbl.setFixedWidth(240)
         self.dup_combo = QComboBox()
-        self.dup_combo.addItems(["Rename (auto-increment)", "Replace (overwrite)", "Skip"])
+        self.dup_combo.addItems(["Add number to filename (e.g. file (1).jpg)", "Replace existing file", "Skip file"])
+        self.dup_combo.setMinimumHeight(32)
         dup_row.addWidget(dup_lbl)
         dup_row.addWidget(self.dup_combo)
         dup_row.addStretch()
         g_layout.addLayout(dup_row)
 
-        self.clean_empty_chk = QCheckBox("Automatically remove empty directories created after undo/organization")
+        self.clean_empty_chk = QCheckBox("Clean up empty folders automatically after organizing")
         g_layout.addWidget(self.clean_empty_chk)
 
-        self.recursive_chk = QCheckBox("Scan subdirectories recursively by default")
+        self.recursive_chk = QCheckBox("Also organize files inside sub-folders")
         g_layout.addWidget(self.recursive_chk)
 
         form_layout.addWidget(general_group)
 
         # Group 2: Folder Watcher & Debounce
-        watcher_group = QGroupBox("Folder Monitoring & Debouncing")
+        watcher_group = QGroupBox("Live Folder Watching")
         w_layout = QVBoxLayout(watcher_group)
         w_layout.setSpacing(10)
 
         debounce_row = QHBoxLayout()
-        debounce_lbl = QLabel("Write-Lock Debounce Delay (seconds):")
+        debounce_lbl = QLabel("Download / Copy Wait Delay (seconds):")
         debounce_lbl.setFixedWidth(260)
         self.debounce_spin = QDoubleSpinBox()
         self.debounce_spin.setRange(0.2, 30.0)
         self.debounce_spin.setSingleStep(0.5)
+        self.debounce_spin.setMinimumHeight(32)
         debounce_row.addWidget(debounce_lbl)
         debounce_row.addWidget(self.debounce_spin)
         debounce_row.addStretch()
         w_layout.addLayout(debounce_row)
 
-        debounce_desc = QLabel("Waits until a file has finished downloading or writing before organizing.")
+        debounce_desc = QLabel("Waits until a file has completely finished downloading before organizing it.")
         debounce_desc.setStyleSheet("color: #9ca3af; font-size: 11px;")
         w_layout.addWidget(debounce_desc)
 
         form_layout.addWidget(watcher_group)
 
         # Group 3: Ignored File Patterns
-        ignore_group = QGroupBox("Ignored File & Directory Patterns")
+        ignore_group = QGroupBox("Ignored Files (Never Move These)")
         i_layout = QVBoxLayout(ignore_group)
         i_layout.setSpacing(10)
 
         add_pat_row = QHBoxLayout()
         self.new_pat_input = QLineEdit()
         self.new_pat_input.setPlaceholderText("e.g. *.tmp, *.crdownload, .git, Thumbs.db")
+        self.new_pat_input.setMinimumHeight(32)
         add_pat_row.addWidget(self.new_pat_input)
 
-        add_pat_btn = QPushButton("+ Add Pattern")
+        add_pat_btn = QPushButton("+ Add File Pattern")
         add_pat_btn.setObjectName("primaryBtn")
+        add_pat_btn.setMinimumHeight(32)
         add_pat_btn.clicked.connect(self._add_pattern)
         add_pat_row.addWidget(add_pat_btn)
         i_layout.addLayout(add_pat_row)
@@ -144,6 +149,7 @@ class SettingsView(QWidget):
 
         del_pat_btn = QPushButton("Remove Selected Pattern")
         del_pat_btn.setObjectName("dangerBtn")
+        del_pat_btn.setMinimumHeight(30)
         del_pat_btn.clicked.connect(self._remove_pattern)
         i_layout.addWidget(del_pat_btn)
 
