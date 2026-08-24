@@ -1,0 +1,265 @@
+{
+  "rules": [
+    {
+      "id": "rule-invoices",
+      "name": "Invoices & Receipts",
+      "description": "Route invoice PDFs into organized yearly subfolders",
+      "enabled": true,
+      "priority": 10,
+      "when": {
+        "logical_operator": "AND",
+        "conditions": [
+          {
+            "field": "extension",
+            "operator": "equals",
+            "value": "pdf"
+          },
+          {
+            "field": "filename",
+            "operator": "matches_regex",
+            "value": "(?i)(invoice|receipt|bill|statement)"
+          }
+        ]
+      },
+      "then": {
+        "destination": "Documents/Invoices/{year}/",
+        "action_type": "move",
+        "on_duplicate": "rename",
+        "create_subfolders": true
+      },
+      "stop_on_match": true
+    },
+    {
+      "id": "rule-photos-year",
+      "name": "Photos by Year",
+      "description": "Organize image files into yearly folders based on photo date",
+      "enabled": true,
+      "priority": 20,
+      "when": {
+        "logical_operator": "OR",
+        "conditions": [
+          {
+            "field": "file_type",
+            "operator": "equals",
+            "value": "Images"
+          },
+          {
+            "field": "extension",
+            "operator": "in_list",
+            "value": ["jpg", "jpeg", "png", "webp", "gif", "heic", "raw"]
+          }
+        ]
+      },
+      "then": {
+        "destination": "Images/{year}/",
+        "action_type": "move",
+        "on_duplicate": "rename",
+        "create_subfolders": true
+      },
+      "stop_on_match": true
+    },
+    {
+      "id": "rule-spreadsheets",
+      "name": "Spreadsheets & Reports",
+      "description": "Organize Excel, CSV, and tabular data sheets",
+      "enabled": true,
+      "priority": 30,
+      "when": {
+        "logical_operator": "OR",
+        "conditions": [
+          {
+            "field": "file_type",
+            "operator": "equals",
+            "value": "Spreadsheets"
+          },
+          {
+            "field": "extension",
+            "operator": "in_list",
+            "value": ["xlsx", "xls", "csv", "tsv", "ods"]
+          }
+        ]
+      },
+      "then": {
+        "destination": "Spreadsheets/{year}/",
+        "action_type": "move",
+        "on_duplicate": "rename",
+        "create_subfolders": true
+      },
+      "stop_on_match": true
+    },
+    {
+      "id": "rule-documents-general",
+      "name": "Documents (General)",
+      "description": "Organize general PDF, Word, and text documents",
+      "enabled": true,
+      "priority": 40,
+      "when": {
+        "logical_operator": "OR",
+        "conditions": [
+          {
+            "field": "file_type",
+            "operator": "equals",
+            "value": "Documents"
+          },
+          {
+            "field": "extension",
+            "operator": "in_list",
+            "value": ["pdf", "doc", "docx", "txt", "rtf", "odt", "epub", "md"]
+          }
+        ]
+      },
+      "then": {
+        "destination": "Documents/",
+        "action_type": "move",
+        "on_duplicate": "rename",
+        "create_subfolders": true
+      },
+      "stop_on_match": true
+    },
+    {
+      "id": "rule-videos",
+      "name": "Videos & Screen Recordings",
+      "description": "Organize MP4, MKV, MOV, and video files",
+      "enabled": true,
+      "priority": 50,
+      "when": {
+        "logical_operator": "OR",
+        "conditions": [
+          {
+            "field": "file_type",
+            "operator": "equals",
+            "value": "Videos"
+          },
+          {
+            "field": "extension",
+            "operator": "in_list",
+            "value": ["mp4", "mkv", "mov", "avi", "webm"]
+          }
+        ]
+      },
+      "then": {
+        "destination": "Videos/",
+        "action_type": "move",
+        "on_duplicate": "rename",
+        "create_subfolders": true
+      },
+      "stop_on_match": true
+    },
+    {
+      "id": "rule-music",
+      "name": "Audio & Music",
+      "description": "Organize MP3, WAV, FLAC audio files",
+      "enabled": true,
+      "priority": 60,
+      "when": {
+        "logical_operator": "OR",
+        "conditions": [
+          {
+            "field": "file_type",
+            "operator": "equals",
+            "value": "Audio"
+          },
+          {
+            "field": "extension",
+            "operator": "in_list",
+            "value": ["mp3", "wav", "flac", "aac", "ogg", "m4a"]
+          }
+        ]
+      },
+      "then": {
+        "destination": "Music/",
+        "action_type": "move",
+        "on_duplicate": "rename",
+        "create_subfolders": true
+      },
+      "stop_on_match": true
+    },
+    {
+      "id": "rule-archives",
+      "name": "Archives & Compressed",
+      "description": "Organize ZIP, 7Z, TAR, RAR archives",
+      "enabled": true,
+      "priority": 70,
+      "when": {
+        "logical_operator": "OR",
+        "conditions": [
+          {
+            "field": "file_type",
+            "operator": "equals",
+            "value": "Archives"
+          },
+          {
+            "field": "extension",
+            "operator": "in_list",
+            "value": ["zip", "7z", "tar", "gz", "rar", "bz2"]
+          }
+        ]
+      },
+      "then": {
+        "destination": "Archives/",
+        "action_type": "move",
+        "on_duplicate": "rename",
+        "create_subfolders": true
+      },
+      "stop_on_match": true
+    },
+    {
+      "id": "rule-applications",
+      "name": "Applications & Setups",
+      "description": "Organize installer setup files and executables",
+      "enabled": true,
+      "priority": 80,
+      "when": {
+        "logical_operator": "OR",
+        "conditions": [
+          {
+            "field": "file_type",
+            "operator": "equals",
+            "value": "Applications"
+          },
+          {
+            "field": "extension",
+            "operator": "in_list",
+            "value": ["exe", "msi", "dmg", "pkg", "deb", "apk"]
+          }
+        ]
+      },
+      "then": {
+        "destination": "Applications/",
+        "action_type": "move",
+        "on_duplicate": "rename",
+        "create_subfolders": true
+      },
+      "stop_on_match": true
+    },
+    {
+      "id": "rule-code",
+      "name": "Code & Scripts",
+      "description": "Organize source code files and scripts",
+      "enabled": true,
+      "priority": 90,
+      "when": {
+        "logical_operator": "OR",
+        "conditions": [
+          {
+            "field": "file_type",
+            "operator": "equals",
+            "value": "Code"
+          },
+          {
+            "field": "extension",
+            "operator": "in_list",
+            "value": ["py", "js", "ts", "html", "css", "json", "cpp", "rs", "go", "sql", "sh"]
+          }
+        ]
+      },
+      "then": {
+        "destination": "Code/{ext}/",
+        "action_type": "move",
+        "on_duplicate": "rename",
+        "create_subfolders": true
+      },
+      "stop_on_match": true
+    }
+  ]
+}
