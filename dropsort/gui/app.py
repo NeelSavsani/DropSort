@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import List, Optional
 
 from PySide6.QtCore import QObject, QThread, Qt, QTimer, Signal
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QPixmap
 from PySide6.QtWidgets import (
     QApplication,
     QButtonGroup,
@@ -61,6 +61,14 @@ class MainWindow(QMainWindow):
         self.resize(1180, 760)
         self.setMinimumSize(960, 620)
 
+        # Locate logo path
+        self.logo_path = Path(__file__).resolve().parent.parent.parent / "DropSort_logo.png"
+        if not self.logo_path.exists():
+            self.logo_path = Path.cwd() / "DropSort_logo.png"
+
+        if self.logo_path.exists():
+            self.setWindowIcon(QIcon(str(self.logo_path)))
+
         # Initialize core managers
         self.database = Database()
         self.settings: AppSettings = load_settings()
@@ -94,8 +102,18 @@ class MainWindow(QMainWindow):
         # App Brand Header
         brand_layout = QHBoxLayout()
         brand_layout.setSpacing(10)
-        brand_icon = QLabel("📂")
-        brand_icon.setStyleSheet("font-size: 26px; background: transparent;")
+
+        if self.logo_path.exists():
+            brand_icon = QLabel()
+            pixmap = QPixmap(str(self.logo_path)).scaled(
+                36, 36, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation
+            )
+            brand_icon.setPixmap(pixmap)
+            brand_icon.setStyleSheet("background: transparent;")
+        else:
+            brand_icon = QLabel("📂")
+            brand_icon.setStyleSheet("font-size: 26px; background: transparent;")
+
         brand_layout.addWidget(brand_icon)
 
         brand_text_box = QVBoxLayout()

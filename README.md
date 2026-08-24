@@ -1,6 +1,8 @@
-# 📂 DropSort — Intelligent File Organizer
-
 <div align="center">
+
+<img src="DropSort_logo.png" alt="DropSort Logo" width="240">
+
+# 📂 DropSort — Intelligent File Organizer
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab.svg?style=flat&logo=python&logoColor=white)](https://python.org)
 [![PySide6](https://img.shields.io/badge/GUI-PySide6-41cd52.svg?style=flat&logo=qt&logoColor=white)](https://doc.qt.io/qtforpython/)
