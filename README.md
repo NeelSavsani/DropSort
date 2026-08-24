@@ -6,10 +6,13 @@
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab.svg?style=flat&logo=python&logoColor=white)](https://python.org)
 [![PySide6](https://img.shields.io/badge/GUI-PySide6-41cd52.svg?style=flat&logo=qt&logoColor=white)](https://doc.qt.io/qtforpython/)
+[![Release](https://img.shields.io/github/v/release/NeelSavsani/DropSort?color=6366f1&label=Download%20EXE&logo=windows)](https://github.com/NeelSavsani/DropSort/releases/latest)
 [![License: MIT](https://img.shields.io/badge/License-MIT-indigo.svg?style=flat)](LICENSE)
-[![Tests](https://img.shields.io/badge/Tests-28%20Passed-10b981.svg?style=flat&logo=pytest&logoColor=white)](#-testing)
+[![Tests](https://img.shields.io/badge/Tests-29%20Passed-10b981.svg?style=flat&logo=pytest&logoColor=white)](#-testing)
 
 **DropSort** automatically organizes files into the right folders based on extension, filename patterns, file type, modification date, and fully customizable user-defined rules — with a **live preview** before anything moves, and **one-click undo** if it doesn't.
+
+### 📥 [Download DropSort for Windows (Click Here)](https://github.com/NeelSavsani/DropSort/releases/latest)
 
 </div>
 

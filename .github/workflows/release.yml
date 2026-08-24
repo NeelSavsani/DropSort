@@ -1,0 +1,62 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Run Tests
+        run: |
+          pytest
+
+      - name: Build Standalone Executable
+        run: |
+          pyinstaller DropSort.spec
+
+      - name: Create GitHub Release and Upload Binary
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          name: DropSort ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+          files: dist/DropSort.exe
+          body: |
+            ## 📂 DropSort v${{ github.ref_name }} — Intelligent File Organizer
+
+            DropSort automatically organizes messy folders (like Downloads, Desktop, or Documents) into neat, structured directories based on file extensions, dates, categories, and custom rules.
+
+            ### ✨ Key Features
+            - **🖥️ Easy Desktop GUI**: Friendly 3-step workflow (Choose Folder ➔ Search & Preview ➔ Confirm Change).
+            - **🔍 Safe Live Preview**: Inspect exactly where each file will go before anything moves.
+            - **↩️ 1-Click Undo**: Put files back in their original spots instantly if you change your mind.
+            - **⚙️ Visual Rule Builder**: Customize sorting filters by extension, name pattern, size, and date.
+            - **🔒 100% Offline & Private**: Runs completely locally on your computer with SQLite history tracking.
+
+            ### 🚀 Quick Download & Install
+            1. Download **`DropSort.exe`** from the Assets below.
+            2. Double-click **`DropSort.exe`** to launch! (No installation or Python needed).
