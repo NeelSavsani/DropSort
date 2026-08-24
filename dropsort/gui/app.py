@@ -38,7 +38,7 @@ from dropsort.gui.history_view import HistoryView
 from dropsort.gui.preview_view import PreviewView
 from dropsort.gui.rule_editor_view import RuleEditorView
 from dropsort.gui.settings_view import SettingsView
-from dropsort.gui.styles import MAIN_STYLESHEET
+from dropsort.gui.styles import get_stylesheet, translate_inline_stylesheet
 from dropsort.models import AppSettings, FileMetadata, PreviewPlan, Rule
 from dropsort.organizer import create_preview, execute_plan, scan_folder, undo_batch
 from dropsort.rule_engine import RuleEngine
@@ -84,7 +84,7 @@ class MainWindow(QMainWindow):
         self.watcher_worker.file_landed.connect(self._on_watcher_file_landed)
 
         self._init_ui()
-        self.setStyleSheet(MAIN_STYLESHEET)
+        self._apply_theme(self.settings.dark_mode)
 
     def _init_ui(self) -> None:
         central = QWidget()
@@ -160,6 +160,15 @@ class MainWindow(QMainWindow):
 
         side_layout.addStretch()
 
+        # Appearance control stays available from every screen.
+        self.theme_toggle_btn = QPushButton()
+        self.theme_toggle_btn.setObjectName("themeToggle")
+        self.theme_toggle_btn.setMinimumHeight(38)
+        self.theme_toggle_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.theme_toggle_btn.clicked.connect(self._toggle_theme)
+        side_layout.addWidget(self.theme_toggle_btn)
+        side_layout.addSpacing(8)
+
         # Sidebar footer
         footer_lbl = QLabel("DropSort v1.0.0\nLocal & Private")
         footer_lbl.setStyleSheet("color: #4b5563; font-size: 11px; text-align: center; background: transparent;")
@@ -200,6 +209,36 @@ class MainWindow(QMainWindow):
 
         # Connect signals
         self._wire_signals()
+
+    def _toggle_theme(self) -> None:
+        """Switch appearance and retain the preference for the next launch."""
+        self.settings.dark_mode = not self.settings.dark_mode
+        self._apply_theme(self.settings.dark_mode)
+        from dropsort.config import save_settings
+        save_settings(self.settings)
+        self.show_toast(f"{'Night' if self.settings.dark_mode else 'Day'} mode enabled", "info")
+
+    def _apply_theme(self, dark_mode: bool, update_local_widgets: bool = True) -> None:
+        self.setStyleSheet(get_stylesheet(dark_mode))
+        self.theme_toggle_btn.setText("☀  Switch to Day Mode" if dark_mode else "☾  Switch to Night Mode")
+        self.theme_toggle_btn.setToolTip("Change DropSort appearance")
+
+        if not update_local_widgets:
+            return
+        # Local QSS has higher priority than the application stylesheet.
+        # Rebuilding those small component rules from their dark baseline keeps
+        # the entire UI coherent after any number of appearance switches.
+        for widget in self.findChildren(QWidget):
+            local_style = widget.styleSheet()
+            original_style = widget.property("_dropsort_dark_style")
+            if original_style is None and not local_style:
+                continue
+            if original_style is None:
+                original_style = local_style
+                widget.setProperty("_dropsort_dark_style", original_style)
+            updated_style = translate_inline_stylesheet(str(original_style), dark_mode)
+            if updated_style != local_style:
+                widget.setStyleSheet(updated_style)
 
     def _wire_signals(self) -> None:
         # Dashboard signals

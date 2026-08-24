@@ -45,7 +45,19 @@ class DashboardView(QWidget):
         self.refresh_stats()
 
     def _init_ui(self) -> None:
-        main_layout = QVBoxLayout(self)
+        # Let the dashboard breathe on smaller screens instead of compressing
+        # controls into one another.
+        outer_layout = QVBoxLayout(self)
+        outer_layout.setContentsMargins(0, 0, 0, 0)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setFrameShape(QFrame.Shape.NoFrame)
+        scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
+        content = QWidget()
+        scroll.setWidget(content)
+        outer_layout.addWidget(scroll)
+
+        main_layout = QVBoxLayout(content)
         main_layout.setContentsMargins(24, 20, 24, 20)
         main_layout.setSpacing(20)
 
@@ -54,11 +66,14 @@ class DashboardView(QWidget):
         title_box = QVBoxLayout()
         title_box.setSpacing(3)
 
-        main_title = QLabel("Dashboard")
-        main_title.setStyleSheet("font-size: 22px; font-weight: 700; color: #f3f4f6;")
-        sub_title = QLabel("Organize your files cleanly into folders in 3 easy steps.")
+        eyebrow = QLabel("DROP. SORT. DONE.")
+        eyebrow.setStyleSheet("font-size: 11px; font-weight: 800; letter-spacing: 1.5px; color: #818cf8;")
+        main_title = QLabel("Your file workspace")
+        main_title.setStyleSheet("font-size: 26px; font-weight: 800; color: #f3f4f6;")
+        sub_title = QLabel("A calmer way to keep every download, document, and project in order.")
         sub_title.setStyleSheet("font-size: 13px; color: #9ca3af;")
 
+        title_box.addWidget(eyebrow)
         title_box.addWidget(main_title)
         title_box.addWidget(sub_title)
         header_layout.addLayout(title_box)
@@ -123,7 +138,7 @@ class DashboardView(QWidget):
         wf_layout.setSpacing(10)
 
         wf_title_row = QHBoxLayout()
-        wf_step_lbl = QLabel("1️⃣ Step 1: Choose a Folder    ➔    2️⃣ Step 2: Click 'Search' to Test Safely")
+        wf_step_lbl = QLabel("01  Choose a folder     →     02  Preview safely     →     03  Organize with confidence")
         wf_step_lbl.setStyleSheet("font-size: 13px; font-weight: 700; color: #818cf8; background: transparent;")
         wf_title_row.addWidget(wf_step_lbl)
         wf_title_row.addStretch()
@@ -163,12 +178,15 @@ class DashboardView(QWidget):
 
         # Drop Zone (Folder selection)
         self.drop_zone = DropZone()
+        self.drop_zone.setMinimumHeight(178)
         self.drop_zone.folder_selected.connect(self.set_folder)
         middle_layout.addWidget(self.drop_zone, stretch=3)
 
         # Quick Actions Card
         actions_card = QFrame()
         actions_card.setObjectName("actionsCard")
+        # Prevent the action buttons being squeezed together on smaller windows.
+        actions_card.setMinimumHeight(220)
         actions_card.setStyleSheet("""
             QFrame#actionsCard {
                 background-color: #18202c;
@@ -181,27 +199,27 @@ class DashboardView(QWidget):
         act_layout.setContentsMargins(14, 14, 14, 14)
         act_layout.setSpacing(12)
 
-        act_title = QLabel("Quick Actions")
+        act_title = QLabel("Ready when you are")
         act_title.setStyleSheet("font-size: 14px; font-weight: 700; color: #f3f4f6; background: transparent;")
         act_layout.addWidget(act_title)
 
         self.preview_btn = QPushButton("🔍 Search and Preview")
         self.preview_btn.setObjectName("primaryBtn")
-        self.preview_btn.setMinimumHeight(38)
+        self.preview_btn.setMinimumHeight(42)
         self.preview_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.preview_btn.clicked.connect(self._on_preview_clicked)
         act_layout.addWidget(self.preview_btn)
 
         self.organize_btn = QPushButton("⚡ Move Files Now")
         self.organize_btn.setObjectName("successBtn")
-        self.organize_btn.setMinimumHeight(38)
+        self.organize_btn.setMinimumHeight(42)
         self.organize_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.organize_btn.clicked.connect(self._on_organize_clicked)
         act_layout.addWidget(self.organize_btn)
 
         self.undo_btn = QPushButton("↩️ Put Files Back (Undo)")
         self.undo_btn.setObjectName("subtleBtn")
-        self.undo_btn.setMinimumHeight(38)
+        self.undo_btn.setMinimumHeight(42)
         self.undo_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.undo_btn.clicked.connect(self._on_undo_clicked)
         act_layout.addWidget(self.undo_btn)

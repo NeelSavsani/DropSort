@@ -6,7 +6,8 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+dist/*
+!dist/DropSort.exe
 downloads/
 eggs/
 .eggs/
@@ -25,6 +26,7 @@ venv/
 ENV/
 env/
 .venv/
+.build_deps/
 
 # Pytest / Coverage
 .pytest_cache/

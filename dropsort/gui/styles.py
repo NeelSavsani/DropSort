@@ -1,4 +1,6 @@
-"""Modern dark-mode QSS stylesheets and aesthetic design tokens for PySide6 GUI."""
+"""Modern QSS stylesheets and aesthetic design tokens for the PySide6 GUI."""
+
+import re
 
 THEME_COLORS = {
     "bg_darkest": "#0b0e14",
@@ -51,6 +53,23 @@ QMainWindow {
 
 #sidebarHeader {
     padding: 20px 16px 12px 16px;
+}
+
+QPushButton#themeToggle {
+    background-color: #131b26;
+    color: #cbd5e1;
+    border: 1px solid #2e3d52;
+    border-radius: 9px;
+    padding: 8px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: left;
+}
+
+QPushButton#themeToggle:hover {
+    background-color: #212c3d;
+    color: #ffffff;
+    border-color: #6366f1;
 }
 
 #navBtn {
@@ -122,7 +141,7 @@ QPushButton:disabled {
 
 /* Primary Action Buttons */
 QPushButton#primaryBtn {
-    background-color: #6366f1;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #6366f1, stop:1 #4f46e5);
     color: #ffffff;
     border: 1px solid #4f46e5;
     font-weight: 700;
@@ -130,7 +149,7 @@ QPushButton#primaryBtn {
 }
 
 QPushButton#primaryBtn:hover {
-    background-color: #4f46e5;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #4f46e5, stop:1 #4338ca);
     border-color: #4338ca;
 }
 
@@ -140,7 +159,7 @@ QPushButton#primaryBtn:pressed {
 
 /* Success Buttons */
 QPushButton#successBtn {
-    background-color: #10b981;
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #10b981, stop:1 #059669);
     color: #ffffff;
     border: 1px solid #059669;
     font-weight: 700;
@@ -389,3 +408,37 @@ QTabBar::tab:hover:!selected {
     color: #f3f4f6;
 }
 """
+
+# A calm, high-contrast daytime palette.  Keeping the component geometry the
+# same in both themes makes switching instant and avoids visual jumps.
+_LIGHT_REPLACEMENTS = {
+    "#0b0e14": "#f4f7fb", "#0f141c": "#f8fafc", "#18202c": "#ffffff",
+    "#212c3d": "#edf2f7", "#131b26": "#f7f9fc", "#141b24": "#f8fafc",
+    "#101721": "#f1f5f9", "#1a2332": "#dfe7f1", "#1b2535": "#eef2f7",
+    "#1c2534": "#f8fafc", "#1e293b": "#e2e8f0", "#24324a": "#e0e7ff",
+    "#283548": "#d7e0ea", "#2e3d52": "#c7d2e1", "#3b4d66": "#aebfd2",
+    "#4f607d": "#94a9c0", "#4b5563": "#64748b", "#6b7280": "#64748b",
+    "#9ca3af": "#52657a", "#cbd5e1": "#334155", "#e5e7eb": "#1e293b",
+    "#f3f4f6": "#10213a", "#ffffff": "#ffffff", "#182333": "#eef2ff",
+}
+
+
+def get_stylesheet(dark_mode: bool = True) -> str:
+    """Return the application stylesheet for the requested appearance."""
+    if dark_mode:
+        return MAIN_STYLESHEET
+    return translate_inline_stylesheet(MAIN_STYLESHEET, dark_mode=False)
+
+
+def translate_inline_stylesheet(stylesheet: str, dark_mode: bool) -> str:
+    """Translate legacy, widget-local colours to the requested palette.
+
+    Several specialised widgets intentionally have local QSS.  This lets the
+    appearance switch update them too, without weakening their component styles.
+    """
+    if dark_mode:
+        return stylesheet
+    # Regex performs a one-pass substitution, so a new light value can never
+    # be substituted again if it happens to resemble a dark palette token.
+    matcher = re.compile("|".join(re.escape(color) for color in _LIGHT_REPLACEMENTS))
+    return matcher.sub(lambda match: _LIGHT_REPLACEMENTS[match.group(0)], stylesheet)
