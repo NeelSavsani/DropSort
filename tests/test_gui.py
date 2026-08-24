@@ -69,3 +69,25 @@ def test_rule_editor_sandbox_interaction(qapp):
 
         editor.test_filename_input.setText("setup_v1.0.exe")
         assert "Applications" in editor.sandbox_result_lbl.text()
+
+
+def test_dashboard_browse_and_set_folder(qapp):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        rules_path = Path(tmpdir) / "rules.json"
+        target_dir = Path(tmpdir) / "sample_folder"
+        target_dir.mkdir()
+        (target_dir / "invoice_1.pdf").write_text("dummy")
+
+        window = MainWindow(str(rules_path))
+        dashboard = window.dashboard_view
+
+        # Set folder programmatically
+        dashboard.set_folder(str(target_dir))
+        assert dashboard.current_folder == str(target_dir)
+        assert dashboard.path_input.text() == str(target_dir)
+
+        # Trigger search & dry run
+        dashboard.search_btn.click()
+        assert window.view_stack.currentIndex() == 1  # Switched to Preview tab
+        assert window.preview_view.current_plan is not None
+        assert len(window.preview_view.current_plan.items) == 1

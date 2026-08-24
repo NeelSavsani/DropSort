@@ -263,17 +263,29 @@ class DashboardView(QWidget):
             self.set_folder(folder)
 
     def _on_path_input_changed(self, text: str) -> None:
+        if getattr(self, "_is_updating_path", False):
+            return
         p = Path(text.strip())
         if p.exists() and p.is_dir():
-            self.current_folder = str(p.resolve())
-            self.drop_zone.set_folder(self.current_folder)
+            self._is_updating_path = True
+            try:
+                self.current_folder = str(p.resolve())
+                self.drop_zone.set_folder(self.current_folder)
+            finally:
+                self._is_updating_path = False
 
     def set_folder(self, folder: str) -> None:
-        self.current_folder = folder
-        if self.path_input.text() != folder:
-            self.path_input.setText(folder)
-        self.drop_zone.set_folder(folder)
-        self.log_activity(f"Selected target folder: {folder}", "info")
+        if getattr(self, "_is_updating_path", False):
+            return
+        self._is_updating_path = True
+        try:
+            self.current_folder = folder
+            if self.path_input.text() != folder:
+                self.path_input.setText(folder)
+            self.drop_zone.set_folder(folder)
+            self.log_activity(f"Selected target folder: {folder}", "info")
+        finally:
+            self._is_updating_path = False
 
     def _toggle_watcher(self) -> None:
         if not self.current_folder:

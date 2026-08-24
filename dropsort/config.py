@@ -198,27 +198,64 @@ def get_default_rules() -> List[Rule]:
     ]
 
 
-def load_rules_from_file(file_path: Union[str, Path]) -> List[Rule]:
-    """Load rules from a JSON or YAML file."""
-    p = Path(file_path)
-    if not p.exists():
-        return get_default_rules()
+import sys
 
-    content = p.read_text(encoding="utf-8")
-    if p.suffix.lower() in [".yaml", ".yml"]:
-        try:
-            import yaml
-            data = yaml.safe_load(content)
-        except ImportError:
-            raise RuntimeError("PyYAML is required to parse YAML rule files.")
+
+def get_resource_path(relative_path: str) -> Path:
+    """Get absolute path to resource, works for dev and for PyInstaller _MEIPASS."""
+    if hasattr(sys, "_MEIPASS"):
+        return Path(getattr(sys, "_MEIPASS")) / relative_path
+    base_dir = Path(__file__).resolve().parent.parent
+    local_path = base_dir / relative_path
+    if local_path.exists():
+        return local_path
+    return Path.cwd() / relative_path
+
+
+def get_user_rules_path() -> Path:
+    """Get path to the user's persistent rules file in AppData."""
+    user_rules = get_app_data_dir() / "rules.json"
+    if not user_rules.exists():
+        bundled_rules = get_resource_path("rules.json")
+        if bundled_rules.exists():
+            try:
+                user_rules.write_text(bundled_rules.read_text(encoding="utf-8"), encoding="utf-8")
+            except Exception:
+                pass
+    return user_rules
+
+
+def load_rules_from_file(file_path: Optional[Union[str, Path]] = None) -> List[Rule]:
+    """Load rules from a JSON or YAML file or user AppData."""
+    if file_path is None:
+        p = get_user_rules_path()
     else:
-        data = json.loads(content)
+        p = Path(file_path)
 
-    rules_data = data.get("rules", []) if isinstance(data, dict) else data
-    rules = [Rule.from_dict(r) for r in rules_data if isinstance(r, dict)]
-    # Sort rules by priority
-    rules.sort(key=lambda r: r.priority)
-    return rules
+    if not p.exists():
+        bundled = get_resource_path("rules.json")
+        if bundled.exists():
+            p = bundled
+        else:
+            return get_default_rules()
+
+    try:
+        content = p.read_text(encoding="utf-8")
+        if p.suffix.lower() in [".yaml", ".yml"]:
+            try:
+                import yaml
+                data = yaml.safe_load(content)
+            except ImportError:
+                raise RuntimeError("PyYAML is required to parse YAML rule files.")
+        else:
+            data = json.loads(content)
+
+        rules_data = data.get("rules", []) if isinstance(data, dict) else data
+        rules = [Rule.from_dict(r) for r in rules_data if isinstance(r, dict)]
+        rules.sort(key=lambda r: r.priority)
+        return rules if rules else get_default_rules()
+    except Exception:
+        return get_default_rules()
 
 
 def save_rules_to_file(rules: List[Rule], file_path: Union[str, Path]) -> None:

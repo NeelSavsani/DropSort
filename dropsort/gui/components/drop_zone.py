@@ -98,15 +98,16 @@ class DropZone(QFrame):
             path = urls[0].toLocalFile()
             if Path(path).is_dir():
                 self.set_folder(path)
+                self.folder_selected.emit(path)
                 event.acceptProposedAction()
 
     def _open_file_dialog(self) -> None:
         folder = QFileDialog.getExistingDirectory(self, "Select Folder to Organize")
         if folder:
             self.set_folder(folder)
+            self.folder_selected.emit(folder)
 
     def set_folder(self, folder_path: str) -> None:
         self.current_folder = folder_path
         self.title_label.setText(f"Target: {Path(folder_path).name}")
         self.sub_label.setText(folder_path)
-        self.folder_selected.emit(folder_path)

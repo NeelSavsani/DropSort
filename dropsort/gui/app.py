@@ -25,6 +25,8 @@ from PySide6.QtWidgets import (
 
 from dropsort.config import (
     get_default_rules,
+    get_resource_path,
+    get_user_rules_path,
     load_rules_from_file,
     load_settings,
     save_rules_to_file,
@@ -61,10 +63,10 @@ class MainWindow(QMainWindow):
         self.resize(1180, 760)
         self.setMinimumSize(960, 620)
 
-        # Locate logo path
-        self.logo_path = Path(__file__).resolve().parent.parent.parent / "DropSort_logo.png"
+        # Locate logo path (works in dev and PyInstaller exe)
+        self.logo_path = get_resource_path("DropSort_logo.png")
         if not self.logo_path.exists():
-            self.logo_path = Path.cwd() / "DropSort_logo.png"
+            self.logo_path = get_resource_path("DropSort_logo.ico")
 
         if self.logo_path.exists():
             self.setWindowIcon(QIcon(str(self.logo_path)))
@@ -72,7 +74,7 @@ class MainWindow(QMainWindow):
         # Initialize core managers
         self.database = Database()
         self.settings: AppSettings = load_settings()
-        self.rules_file = rules_file or str(Path.cwd() / "rules.json")
+        self.rules_file = rules_file or str(get_user_rules_path())
         self.rules: List[Rule] = load_rules_from_file(self.rules_file)
         self.rule_engine = RuleEngine(self.rules)
 
